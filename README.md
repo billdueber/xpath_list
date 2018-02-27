@@ -58,6 +58,19 @@ ap XPathList.xpaths(filename: 'test.xml')
 # ]
 ```
 
+If you have tags you want to ignore, you can do so
+
+```ruby
+ap XPathList.xpaths(filename: 'test.xml', ignore_tags: %w[em])
+# [
+#   [0] "/A/B",
+#   [1] "/A/B/C",
+#   [2] "/A/B/Cgroup/C",
+#   [3] "/A/D",
+#   [4] "/A/E/D/B"
+# ]
+```
+
 
 You can also just give it a single nokogiri node
 
@@ -74,7 +87,7 @@ And if you really want to, you can just get all the paths
 in order as they appear in the document
 
 ```ruby
-ap XPathList.all_xpaths(node: node)
+ap XPathList.all_xpaths(node: doc)
 # [
 #   [0] "/A/B",
 #   [1] "/A/B",

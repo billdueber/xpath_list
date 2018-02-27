@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<A>
+  <B>This is a B</B>
+  <B>This is a B</B>
+  <B>This is a B</B>
+  <B>This is a B</B>
+  <B>Another B
+    <C>with a C in it</C>
+  </B>
+  <B>Another B
+    <Cgroup>
+      <C>with</C>
+      <C>grouped</C>
+      <C>C nodes</C>
+    </Cgroup>
+  </B>
+  <D>Here's a D with <em>an embedded child</em></D>
+  <E>And an E
+    <D>...with a D
+      <B>that contains a B, for some reason</B>
+    </D>
+  </E>
+</A>
