@@ -1,0 +1,5 @@
+#!/bin/env ruby
+
+require 'xpath_list'
+
+puts XPathList.xpaths(filename: ARGV[0]).join("\n")
