@@ -1,5 +1,6 @@
-require "xpath_list/version"
+require_relative "xpath_list/version"
 require 'nokogiri'
+require 'forwardable'
 
 module XPathList
   # Only pay attention to named tags; ignore
@@ -17,13 +18,13 @@ module XPathList
 
     def min(v = nil)
       return @min if v.nil?
-      @min = [@min, v].min
+      @min = @min.nil? ? v : [@min, v].min
       @min
     end
 
     def max(v = nil)
       return @max if v.nil?
-      @max = [@max, v].max
+      @max = @max.nil? ? v : [@max, v].max
       @max
     end
 
@@ -35,7 +36,7 @@ module XPathList
 
     def merge(other)
       min = [@min, other.min].min
-      max =[@max, other.max].max
+      max = [@max, other.max].max
       self.class.new(min, max)
     end
 
@@ -51,9 +52,15 @@ module XPathList
   end
 
   class Arities
+    extend Forwardable
+
+    def_delegators :@arities, :each_pair, :keys, :has_key?, :empty?
+
     def initialize
       @arities = {}
     end
+
+    alias_method :has_tag?, :has_key?
 
     def tags
       @arities.keys
@@ -100,7 +107,6 @@ module XPathList
   end
 
 
-
   class XPathArityNode
     attr_accessor :tag, :arity, :children, :arities
 
@@ -110,10 +116,9 @@ module XPathList
 
       @arities = Arities.new
 
-      kid_nokonodes.map(&:name).uniq.each do |h, ktag|
+      kid_nokonodes.map(&:name).compact.uniq.each do |ktag|
         @arities.add(ktag, kid_nokonodes.count {|x| x.name == ktag})
       end
-
       @children = kid_nokonodes.map {|knn| self.class.new(node: knn, ignore_tags: ignore_tags)}
 
     end
@@ -141,14 +146,14 @@ module XPathList
       all_xpaths_in_order_with_arity.each do |xpath, arities|
         rv[xpath] ||= {}
 
-        arities.each_pair do |tag, num|
-          rv[xpath][tag] ||= MinMax.new(num, num)
-          rv[xpath][tag].min(num)
-          rv[xpath][tag].max(num)
+        arities.each_pair do |tag, mm|
+          rv[xpath][tag] ||= MinMax.new
+          rv[xpath][tag].min(mm.min)
+          rv[xpath][tag].max(mm.max)
         end
 
-        rv[xpath].keys do |tag|
-          rv[xpath][tag].min(0) unless arities.has_key?(tag)
+        (rv[xpath].keys - arities.tags).each do |tag|
+          rv[xpath][tag].min(0) unless arities.has_tag?(tag)
         end
       end
       rv
