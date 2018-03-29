@@ -40,15 +40,13 @@ module XPathList
       self.class.new(min, max)
     end
 
-    def to_string
+    def to_s
       if @max == @min
         @max
       else
         "#{@min}..#{max}"
       end
     end
-
-    alias_method :to_s, :inspect
   end
 
   class Arities
@@ -81,6 +79,10 @@ module XPathList
 
     end
 
+    def to_s
+      tags.map{|t| "#{t}[#{self[t].to_s}]"}.join(", ")
+    end
+
     def merge(other)
       merged = self.class.new
       other.tags.each do |othertag|
@@ -96,14 +98,17 @@ module XPathList
 
 
   class XPathsWithArities
+
+
     def initialize
       @xpaths_with_arities = {}
     end
 
-    def <<(xpath, arities)
+    def add(xpath, arities)
       @xpaths_with_arities[xpath] ||= Arities.new
       @xpaths_with_arities[xpath] = @xpaths_with_arities[xpath].merge(arities)
     end
+
   end
 
 
@@ -142,8 +147,10 @@ module XPathList
     end
 
     def all_xpaths_with_arity
+      xpa = XPathsWithArities.new
       rv = {}
       all_xpaths_in_order_with_arity.each do |xpath, arities|
+        xpa.add(xpath, arities)
         rv[xpath] ||= {}
 
         arities.each_pair do |tag, mm|
@@ -156,7 +163,8 @@ module XPathList
           rv[xpath][tag].min(0) unless arities.has_tag?(tag)
         end
       end
-      rv
+      # rv
+      xpa
     end
 
   end
