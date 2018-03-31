@@ -104,6 +104,20 @@ module XPathList
       @xpaths_with_arities = {}
     end
 
+    def each_pair
+      @xpaths_with_arities.each_pair do |k, v|
+        yield [k, v]
+      end
+    end
+
+    def [](key)
+      @xpaths_with_arities[key]
+    end
+
+    def tags
+      @xpaths_with_arities.keys
+    end
+
     def add(xpath, arities)
       @xpaths_with_arities[xpath] ||= Arities.new
       @xpaths_with_arities[xpath] = @xpaths_with_arities[xpath].merge(arities)
