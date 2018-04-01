@@ -1,4 +1,4 @@
-require "xpath_list/version"
+require_relative "xpath_list/version"
 require 'nokogiri'
 
 module XPathList
