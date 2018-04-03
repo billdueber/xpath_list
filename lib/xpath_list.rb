@@ -19,12 +19,14 @@ module XPathList
     def min(v = nil)
       return @min if v.nil?
       @min = @min.nil? ? v : [@min, v].min
+      @max ||= @min
       @min
     end
 
     def max(v = nil)
       return @max if v.nil?
       @max = @max.nil? ? v : [@max, v].max
+      @min ||= @max
       @max
     end
 
@@ -99,6 +101,10 @@ module XPathList
 
   class XPathsWithArities
 
+    extend Forwardable
+    include Enumerable
+
+    def_delegators :@xpaths_with_arities, :each, :each_pair
 
     def initialize
       @xpaths_with_arities = {}
